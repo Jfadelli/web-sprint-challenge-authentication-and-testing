@@ -10,15 +10,6 @@ function isValid(user) {
   return Boolean(user.username && user.password && typeof user.password === "string");
 }
 
-//Registeration
-// router.post('/register', async (req, res, next) => {
-//   try{
-//     const user = req.body
-//     res.status(201).json(await authModel.add(user))
-//   } catch(err){
-//     next(err)
-//   }
-// });
 router.post("/register", (req, res) => {
   const credentials = req.body;
   if (isValid(credentials)) {
@@ -41,7 +32,6 @@ router.post("/register", (req, res) => {
       });
   }
 });
-
 
 //Login
 router.post('/login', (req, res) => {
@@ -85,6 +75,5 @@ function signToken(user) {
 
   return jwt.sign(payload, secret, options);
 }
-
 
 module.exports = router;

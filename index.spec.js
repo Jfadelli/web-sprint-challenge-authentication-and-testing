@@ -1,9 +1,24 @@
 const supertest = require('supertest')
 const server = require('./index')
 const authModel = require('./auth/auth-model')
-const db = require('./database/dbConfig')
+const db = require('./database/dbConfig');
+// const { request } = require('./api/server');
 // const { test } = require('./knexfile')
 
+// let token;
+
+// beforeAll((done) => {
+//     request(server)
+//     .post('/api/auth/login')
+//     .send({
+//         username: user,
+//         password: password,
+//     })
+//     .end((err, response)=>{
+//         token = response.body.token
+//         done()
+//     })
+// })
 
 beforeEach(async () => {
     await db('users').truncate()
@@ -11,7 +26,9 @@ beforeEach(async () => {
 })
 
 describe('test routes', () => {
-    test('create a new user', async () =>{
+
+    //TEST CREATE USERS
+    test('create a new user, success', async () =>{
         const res = await supertest(server)
             .post('/api/auth/register')
             .send({username: 'bob', password: '12345'})
@@ -20,41 +37,56 @@ describe('test routes', () => {
     expect(users).toHaveLength(2)//<-- test 2
     })
 
+    test('create a new user, fail', async () =>{
+        const res = await supertest(server)
+            .post('/api/auth/register')
+            .send({username: '', password: ''})
+        const users = await db('users')
+    expect(res.status).toBe(400) //<-- test 3
+    expect(users).toHaveLength(1)//<-- test 4
+    })
+
+    //TEST LOGIN WITH USER
     test('login with a user', async() => {
         const res = await supertest(server)
         .post('/api/auth/login')
         .send({username:'jason', password:'12345'})
-        console.log(res.data)
-    expect(res.type).toBe('application/json')
-    expect(res.status).toBe(200)
-    expect(res.body).toBeDefined()
+    expect(res.type).toBe('application/json') //<-- test 1
+    expect(res.status).toBe(200) //<-- test 2
+    expect(res.body).toBeDefined() //<--test 3
+    })
+    test('login with a user', async() => {
+        const res = await supertest(server)
+        .post('/api/auth/login')
+        .send({username:'frank', password:'abcde'})
+    expect(res.type).toBe('application/json') //<--test 4
+    expect(res.status).toBe(401) //<-- test 5
+
     })
 
-    test('testing jokes router', async ()=>{
-        function signToken(user) {
-            const payload = {
-                subject: user.id,
-                username: user.username,
-            };
-          
-            const secret = constants.jwtSecret;
-          
-            const options = {
-                expiresIn: "1d",
-            };
-          
-            return jwt.sign(payload, secret, options);
-          }
-        const userlogin = await supertest(server)
-        const token = signToken(user)
 
+    //TEST JOKES ENDPOINT ACCESS
+    test('testing jokes router, access granted', async ()=>{
+        let token;
+        const userlogin = await supertest(server)
             .post('/api/auth/login')
             .send({ username:'jason', password:'12345' })
-            console.log(res)
         const res = await supertest(server)
             .get('/api/jokes')
-            .set(userlogin.header['Authorization'][0])
-        expect(res.status).toBe(200)
-        expect(res.body).toBeTruthy()
+            .set('Authorization', userlogin.body.token)
+    expect(res.status).toBe(200)//<-- test 1
+    expect(res.body).toBeTruthy()//<-- test 2
+    expect(res.body).toBeDefined()//<-- test 3
+    })
+
+    test('testing jokes router, access denied', async ()=>{
+        let token;
+        const userlogin = await supertest(server)
+            .post('/api/auth/login')
+            .send({ username:'JASON', password:'123456' })
+        const res = await supertest(server)
+            .get('/api/jokes')
+    expect(res.status).toBe(401)//<-- test 4
+
     })
 })
