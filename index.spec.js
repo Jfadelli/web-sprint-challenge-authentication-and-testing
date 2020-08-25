@@ -30,7 +30,7 @@ describe('test routes', () => {
     })
 
     //TEST LOGIN WITH USER
-    test('login with a user', async() => {
+    test('login with a user, success', async() => {
         const res = await supertest(server)
         .post('/api/auth/login')
         .send({username:'jason', password:'12345'})
@@ -38,7 +38,7 @@ describe('test routes', () => {
     expect(res.status).toBe(200) //<-- test 2
     expect(res.body).toBeDefined() //<--test 3
     })
-    test('login with a user', async() => {
+    test('login with a user, fail', async() => {
         const res = await supertest(server)
         .post('/api/auth/login')
         .send({username:'frank', password:'abcde'})
