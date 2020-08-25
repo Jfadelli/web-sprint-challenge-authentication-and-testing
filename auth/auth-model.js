@@ -17,7 +17,6 @@ function getUserById(id){
 async function add(user) {
     try {
         const [id] = await db("users").insert(user, "id");
-
         return getUserById(id);
     } catch (error) {
         throw error;
