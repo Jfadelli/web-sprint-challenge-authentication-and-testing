@@ -2,23 +2,6 @@ const supertest = require('supertest')
 const server = require('./index')
 const authModel = require('./auth/auth-model')
 const db = require('./database/dbConfig');
-// const { request } = require('./api/server');
-// const { test } = require('./knexfile')
-
-// let token;
-
-// beforeAll((done) => {
-//     request(server)
-//     .post('/api/auth/login')
-//     .send({
-//         username: user,
-//         password: password,
-//     })
-//     .end((err, response)=>{
-//         token = response.body.token
-//         done()
-//     })
-// })
 
 beforeEach(async () => {
     await db('users').truncate()
