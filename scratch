@@ -1,0 +1,7 @@
+    // test('login with a user', async() => {
+    //     const res = await supertest(server)
+    //     .post('/api/auth/login')
+    //     .send({username:'jason', password:'12345'})
+    // expect(res.type).toBo('application/json')
+
+    // })
